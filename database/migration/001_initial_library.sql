@@ -78,8 +78,7 @@ INSERT INTO students (
 ) VALUES
     ('CLARK DAVID', 'TION', 'BSIT'),
     ('HAZEL JANE', 'LIHOTAN', 'BSIT'),
-    ('BRYLE', 'BINAYAO', 'BSCS'),
-    ('JINREX', 'LEDESMA', 'BSCS');
+    ('BRYLE', 'BINAYAO', 'BSCS');
 
 INSERT INTO books (
     book_title,

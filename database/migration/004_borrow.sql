@@ -25,15 +25,15 @@ INNER JOIN students s
 INNER JOIN books b
     ON br.book_id = b.book_id
 
-WHERE br.book_return_date is NULL
+WHERE br.borrow_return_date is NULL
 
 ORDER BY br.borrow_date DESC;
 
 -- Return a book
 UPDATE borrow 
-SET book_return_date = CURRENT_TIMESTAMP
+SET borrow_return_date = CURRENT_TIMESTAMP
 WHERE borrow_id = 1
-    AND book_return_date IS NULL;
+    AND borrow_return_date IS NULL;
 
 -- View returned books
 SELECT
@@ -62,6 +62,6 @@ INNER JOIN students s
 INNER JOIN books b
     ON br.book_id = b.book_id
 
-WHERE br.book_return_date is NOT NULL
+WHERE br.borrow_return_date is NOT NULL
 
 ORDER BY br.borrow_date DESC;
