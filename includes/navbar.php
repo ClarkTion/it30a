@@ -117,14 +117,14 @@ function navActive($section, $currentSection){
         Students
         </a>
 
-        <a href="index.php?section=Books" class="<?= navActive('books', $currentSection) ?>">
-        <span class="material-icons">book</span>
+        <a href="index.php?section=books" class="<?= navActive('books', $currentSection) ?>">
+        <span class="material-icons">menu_book</span>
         Books
         </a>
 
-        <a href="index.php?section=borrows" class="<?= navActive('borrows', $currentSection) ?>">
+        <a href="index.php?section=borrow" class="<?= navActive('borrow', $currentSection) ?>">
         <span class="material-icons">swap_horiz</span>
-        Borrows
+        Borrow
         </a>
 
     </nav>
