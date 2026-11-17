@@ -130,3 +130,4 @@ function navActive($section, $currentSection){
     </nav>
 
 </header>
+
