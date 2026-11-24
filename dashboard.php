@@ -39,6 +39,33 @@ while ($row = $catStmt->fetch()) {
     $categoryCounts[] = (int) $row['cnt'];
 }
 
+// ---------- 3. BORROW ACTIVITY LAST 7 DAYS ----------
+$dailyStmt = $pdo-> query("
+    SELECT DATE (borrow_date) AS day, COUNT(*) AS cnt
+    FROM borrow
+    WHERE borrow_date >= CURDATE() - INTERVAL 6 DAY
+    GROUP BY DATE (borrow_date)
+    ORDER BY day ASC
+");
+
+$borrowByDay = [];
+
+while ($row = $dailyStmt -> fetch()){
+        $borrowByDay[$row['day']] = (int) $row ['cnt'];
+}
+
+// Generate labels and counts for the last 7 days
+
+$dayLabels = [];
+$dailyBorrows = [];
+
+for ($i = 6; $i >= 0; $i--){
+    $date = date ('Y-m-d', strtotime("-$i days"));
+
+    $dayLabels[] = date ('D', strtotime($date));
+    $dailyBOrrows[] = $borrowByDay[$date] ?? 0;
+}
+
 ?>
 
 <!DOCTYPE html>
@@ -80,7 +107,7 @@ while ($row = $catStmt->fetch()) {
                         0 1px 10px 0 rgba(0,0,0,0.12),
                         0 2px 4px -1px rgba(0,0,0,0.3);
         }
-
+    /* --- KPI CARDS --- */
         .stats-grid{
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -161,6 +188,7 @@ while ($row = $catStmt->fetch()) {
             font-size: 0.75rem;
             text-transform: uppercase;
             display: flex;
+        align-items: center;
             gap: 0.25rem;
         }
 
@@ -289,6 +317,7 @@ while ($row = $catStmt->fetch()) {
         </style>
 </head>
 <body>
+    <div class="dashboard">
     <?php include 'includes/navbar.php'; ?>
     <div class="stats-grid">
     <div class="stat-card">
@@ -299,7 +328,6 @@ while ($row = $catStmt->fetch()) {
         <div class="stat-number"><?= $studentCount ?></div>
         <div class="stat-sub">enrolled</div>
     </div>
-
     <div class="stat-card">
         <div class="stat-header">
             <span class="stat-label">Books</span>
@@ -308,7 +336,6 @@ while ($row = $catStmt->fetch()) {
         <div class="stat-number"><?= $bookCount ?></div>
         <div class="stat-sub">in collection</div>
     </div>
-
     <div class="stat-card">
         <div class="stat-header">
             <span class="stat-label">Borrow records</span>
@@ -317,7 +344,6 @@ while ($row = $catStmt->fetch()) {
         <div class="stat-number"><?= $totalBorrows ?></div>
         <div class="stat-sub">all time</div>
     </div>
-
     <div class="stat-card">
         <div class="stat-header">
             <span class="stat-label">Active loans</span>
@@ -327,24 +353,20 @@ while ($row = $catStmt->fetch()) {
         <div class="stat-sub">not returned</div>
     </div>
 </div>
-
 <!-- CHARTS -->
 <div class="charts-grid">
-
     <!-- Pie Chart - Book Categories-->
     <div class="chart-card">
         <div class="chart-title">
-            Books by category
+            Borrows · last 7 days
             <span>
-                <span class="material-icons">category</span>
-                collection
+                <span class="material-icons">trending_up</span>
+                activity
             </span>
         </div>
-        <canvas id="categoryChart" width="400" height="200"></canvas>
+        <canvas id="borrowChart" width="400" height="200"></canvas>
     </div>
-
 </div>
-
 <script>
     (function() {
         // Materialize standard palette
@@ -356,7 +378,6 @@ while ($row = $catStmt->fetch()) {
             purple: '#9c27b0',
             grey: '#9e9e9e'
         };
-
         // ---------- DOUGHNUT : BOOKS BY CATEGORY ----------
         const catCtx = document.getElementById('categoryChart').getContext('2d');
         new Chart(catCtx, {
@@ -410,7 +431,79 @@ while ($row = $catStmt->fetch()) {
             }
         });
     })();
-</script>
 
+    // ----------- DOUGHNUT: BOOKS BY CATEGORY ----------
+
+    // ----------- BAR: BORROWS LAST 7 DAYS ------------
+    const borrowCtx = document
+        .getElementById('borrowChart')
+        .getContext('2d');
+    new Chart (borrowCtx, {
+        type: 'bar',
+
+        data:[{
+            labels: <?=  json_encode($dailyBorrows) ?>,
+            backgroundColor: colors.blue,
+            borderRadius: 0,
+
+            barPercentage: 0.6,
+            categoryPercentage: 0.8
+
+        }]
+    },
+
+    options:{
+        resposive: true,
+        maintainAspectRatio: true,
+
+        plugins: {
+            legend: {
+                display: false
+            },
+            tooltip: {
+                backgroundColor: '#212121',
+                titleColor: '#ffffff',
+                bodyColor: '#ffffff',
+                padding: 10,
+                cornerRadius: 4,
+
+                callbacks: {
+                    label: (ctx) => `${ctx.raw} borrows `
+                }
+            }
+        },
+
+        scales: {
+            y: {
+                beginAtZero: true,
+                grid: {
+                    color: '#eeeeee',
+                    drawborder: false
+                },
+                ticks: {
+                    stepSize: 1,
+                    color: '#757575',
+                    font:{
+                        size: 11,
+                        family: 'Roboto'
+                    }
+                }
+            },
+            x:{
+                 grid: {
+                    display: false
+                },
+                ticks:{
+                    color: '#757575',
+                    font:{
+                        size: 11,
+                        family: 'Roboto'
+                    }
+                }
+            }
+        }
+    }
+)
+</script>
 </body>
 </html>
