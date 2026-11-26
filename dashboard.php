@@ -41,7 +41,7 @@ $dailyBorrows = [];
 for ($i = 6; $i >= 0; $i--){
     $date = date ('Y-m-d', strtotime("-$i days"));
     $dayLabels[] = date ('D', strtotime($date));
-    $dailyBOrrows[] = $borrowByDay[$date] ?? 0;
+    $dailyBorrows[] = $borrowByDay[$date] ?? 0;
 }
 
 // ---------- 4. RECENT BORROWS ----------
@@ -89,7 +89,6 @@ $recentBorrows = $recentStmt->fetchAll();
                         0 3px 1px -2px rgba(0,0,0,0.12),
                         0 1px 5px 0 rgba(0,0,0,0.2);
             transition: box-shadow 0.3s;
-            padding: 1rem;
         }
 
         .stat-card:hover, .chart-card:hover, .recent-borrows:hover{
@@ -106,7 +105,7 @@ $recentBorrows = $recentStmt->fetchAll();
         }
 
         .stat-card{
-            padduing: 1.5rem;
+            padding: 1.5rem;
             display:flex;
             flex-direction: column;
             border-top: 3px solid #1976d2;
@@ -490,8 +489,8 @@ $recentBorrows = $recentStmt->fetchAll();
                 }
             }
         });
-    })();
-
+  
+// BORROW ACTIVITY CHART            
     const borrowCtx = document
         .getElementById('borrowChart')
         .getContext('2d');
@@ -499,7 +498,7 @@ $recentBorrows = $recentStmt->fetchAll();
     new Chart(borrowCtx, {
         type: 'bar',
         data: {
-            labels: <?= json_encode($dailyBorrows) ?>,
+            labels: <?= json_encode($dayLabels) ?>,
             datasets: [{
                 label: 'Borrows',
                 data: <?= json_encode($dailyBorrows) ?>,
@@ -558,6 +557,7 @@ $recentBorrows = $recentStmt->fetchAll();
             }
         }
     });
+  })();
 </script>
 </body>
-</html>
+</html> 
